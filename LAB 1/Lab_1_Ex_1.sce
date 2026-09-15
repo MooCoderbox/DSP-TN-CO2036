@@ -1,0 +1,10 @@
+x=1:4
+x=1:4
+ans_1=x+1
+disp(ans_1)
+x=1:4
+y=5:8
+ans_2=x.*y
+disp(ans_2)
+ans_3=sin(%pi/9*(0:9))
+disp(ans_3)
