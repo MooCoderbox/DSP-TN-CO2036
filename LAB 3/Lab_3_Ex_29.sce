@@ -1,0 +1,111 @@
+
+clc;
+clear;
+
+// Ham tinh tich chap bang cong thuc dong
+function h = h_closed(a, N, M)
+
+    if N <= 0 | M <= 0 | N <> floor(N) | M <> floor(M) then
+        error("N va M phai la so nguyen duong");
+    end
+
+    L = N + M - 1;
+    h = zeros(1, L);
+
+    for n = 0:L-1
+        k1 = max(0, n-M+1);
+        k2 = min(n, N-1);
+
+        // Xu ly truong hop a = 1
+        if a == 1 then
+            h(n+1) = k2 - k1 + 1;
+        else
+            h(n+1) = (a^k1 - a^(k2+1)) / (1-a);
+        end
+    end
+endfunction
+
+// Ham tinh tich chap truc tiep
+function h = h_conv(a, N, M)
+
+    h1 = a .^ (0:N-1);
+    h2 = ones(1, M);
+
+    h = convol(h1, h2);
+
+    // Dam bao dau ra la vector hang
+    h = matrix(h, 1, N+M-1);
+endfunction
+
+// Cac truong hop kiem thu: (a, N, M)
+tests = [
+    0.5  4  3;   // M < N
+    0.5  3  5;   // M > N
+    1.0  4  3    // a = 1
+];
+
+for t = 1:size(tests, 1)
+
+    a = tests(t, 1);
+    N = tests(t, 2);
+    M = tests(t, 3);
+
+    hc = h_closed(a, N, M);
+    hv = h_conv(a, N, M);
+
+    mprintf("a=%g, N=%d, M=%d\n", a, N, M);
+    disp(hv);
+
+    err = max(abs(hc - hv));
+
+    if err > 1e-10 then
+        error("Cong thuc khong khop voi tich chap truc tiep");
+    end
+
+    mprintf("Sai so toi da = %.3e\n\n", err);
+end
+
+disp("Bai 2.29: tat ca kiem thu thanh cong");
+
+// Ve do thi cho ca ba truong hop trong cung mot window
+tests = [
+    0.5  4  3;   // Truong hop 1: M < N
+    0.5  3  5;   // Truong hop 2: M > N
+    1.0  4  3    // Truong hop 3: a = 1
+];
+
+scf();
+clf();
+
+for i = 1:size(tests, 1)
+
+    a = tests(i, 1);
+    N = tests(i, 2);
+    M = tests(i, 3);
+
+    h = h_conv(a, N, M);
+    n = 0:length(h)-1;
+
+    // Gioi han cac truc
+    nmin = -1;
+    nmax = length(h);
+    amin = 0;
+    amax = ceil(max(h)) + 1;
+
+    rect = [nmin, amin, nmax, amax];
+    nax = [1, nmax-nmin+1, 1, amax-amin+1];
+
+    // Tao subplot thu i trong luoi 3 hang, 1 cot
+    subplot(3, 1, i);
+
+    plot2d3(n, h, 2, "011", " ", rect, nax);
+
+    xgrid();
+
+    xtitle( ...
+        msprintf("Case %d: h(n) = h1(n) * h2(n), a=%g, N=%d, M=%d", ...
+        i, a, N, M), ...
+        "n", "h(n)" ...
+    );
+
+end
