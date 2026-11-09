@@ -1,7 +1,6 @@
 // ================================================================
 // DIGITAL SIGNAL PROCESSING - LAB #4
 // EXERCISE 7: CIRCULAR CONVOLUTION
-// Standalone Scilab script (Fixed Plotting & Stem Markers)
 // ================================================================
 
 clear;
