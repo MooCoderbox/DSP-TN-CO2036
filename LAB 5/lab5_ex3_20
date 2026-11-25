@@ -1,0 +1,67 @@
+// ====================================================================
+// Lab 5 - Problem 3.20: Pole-Zero Pattern and Z-Transform
+// x1(n) = (r^n * sin(w0*n)) * u(n), 0 < r < 1
+// Chon thong so mo phong: r = 0.75, w0 = pi / 4
+// ====================================================================
+
+clear;
+clc;
+clf;
+
+r = 0.75;
+w0 = %pi / 4;
+
+// --------------------------------------------------------------------
+// 1. Mat phang phuc Z: Pole-Zero Pattern cua x1(n)
+// Zeros: z = 0
+// Poles: p1,2 = r * exp(±j*w0)
+// --------------------------------------------------------------------
+p1 = r * exp(%i * w0);
+p2 = r * exp(-%i * w0);
+zeros_val = [0];
+poles_val = [p1, p2];
+
+figure(1);
+
+subplot(1, 2, 1);
+theta = linspace(0, 2*%pi, 300);
+
+// Ve duong tron don vi |z| = 1 va vong tron ban kinh r
+plot(cos(theta), sin(theta), 'k--');
+plot(r * cos(theta), r * sin(theta), 'b:');
+
+// Ve truc toa do thuc - ao
+xpoly([-1.5, 1.5], [0, 0]);
+xpoly([0, 0], [-1.5, 1.5]);
+
+// Danh dau zero ('o') va pole ('x')
+plot(real(zeros_val), imag(zeros_val), 'bo');
+plot(real(poles_val), imag(poles_val), 'rx');
+
+square(-1.4, -1.4, 1.4, 1.4);
+xtitle('(a) Pole-Zero Pattern trên mặt phẳng Z', 'Real(z)', 'Imag(z)');
+hl = legend(['Đường tròn đơn vị (|z|=1)'; 'Vòng tròn r = 0.75'; 'Trục tọa độ'; ''; 'Zero (z=0)'; 'Poles (p_{1,2})'], "in_upper_right");
+gca().data_bounds = [-1.4, -1.4; 1.4, 1.4];
+xgrid();
+
+// --------------------------------------------------------------------
+// 2. So sanh dang song thoi gian x1(n) va x2(n)
+// x1(n) = r^n * sin(w0*n) * u(n)
+// x2(n) = (1 / (r*sin(w0))) * x1(n)
+// --------------------------------------------------------------------
+N = 16;
+n = 0:(N - 1);
+x1 = (r.^n) .* sin(w0 * n);
+G = r * sin(w0); // He so ty le: X1(z) = G * X2(z)
+x2 = x1 / G;
+
+subplot(1, 2, 2);
+plot2d3('gnn', n, x1, 2); // Mau xanh duong: x1(n)
+plot(n, x1, 'bo');
+plot2d3('gnn', n, x2, 5); // Mau do: x2(n)
+plot(n, x2, 'ro');
+
+xtitle('(c) So sánh dạng sóng x_1(n) và x_2(n)', 'n', 'Biên độ');
+hl2 = legend(['x_1(n) [G = r*sin(w0)]'; ''; 'x_2(n) [G = 1]'; ''], "in_upper_right");
+gca().data_bounds = [-1, min([x1, x2]) - 0.2; N, max([x1, x2]) + 0.3];
+xgrid();
